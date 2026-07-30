@@ -1,10 +1,22 @@
-import 'package:coursemind/app/app.dart';
+import 'package:coursemind/features/auth/screens/welcome_screen.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  testWidgets('CourseMind app loads', (WidgetTester tester) async {
-    await tester.pumpWidget(const CourseMindApp());
+  testWidgets('Welcome screen loads', (WidgetTester tester) async {
+    await tester.pumpWidget(
+      const MaterialApp(
+        home: WelcomeScreen(),
+      ),
+    );
 
-    expect(find.byType(CourseMindApp), findsOneWidget);
+    expect(find.text('CourseMind'), findsOneWidget);
+
+    expect(
+      find.text(
+        'Your courses. Your materials. Your learning companion.',
+      ),
+      findsOneWidget,
+    );
   });
 }

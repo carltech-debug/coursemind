@@ -1,3 +1,4 @@
+import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
 
 class WelcomeScreen extends StatelessWidget {
@@ -31,12 +32,16 @@ class WelcomeScreen extends StatelessWidget {
               ),
               const SizedBox(height: 40),
               FilledButton(
-                onPressed: () {},
+                onPressed: () {
+                  context.push('/signup');
+                },
                 child: const Text('Get Started'),
               ),
               const SizedBox(height: 12),
               OutlinedButton(
-                onPressed: () {},
+                onPressed: () {
+                  context.push('/login');
+                },
                 child: const Text('I already have an account'),
               ),
             ],
