@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "381720251752",
+    "project_id": "coursemind-e4dff",
+    "storage_bucket": "coursemind-e4dff.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:381720251752:android:ffb861739a564a131bdadd",
+        "android_client_info": {
+          "package_name": "com.coursemind.coursemind"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDMZQhOHJuurxoIQ9c3dhzJmNM80MOgrms"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
