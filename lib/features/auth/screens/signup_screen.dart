@@ -44,7 +44,7 @@ class _SignupScreenState extends State<SignupScreen> {
       );
 
       if (mounted) {
-        context.go('/home');
+        context.go('/profile-setup');
       }
     } on Exception catch (e) {
       if (mounted) {
