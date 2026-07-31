@@ -19,6 +19,8 @@ import 'package:coursemind/features/courses/screens/course_detail_screen.dart';
 import 'package:coursemind/features/courses/screens/courses_screen.dart';
 import 'package:coursemind/features/institution/screens/course_create_screen.dart';
 import 'package:coursemind/data/models/course.dart';
+import 'package:coursemind/data/models/course_material.dart';
+import 'package:coursemind/features/handouts/screens/material_viewer_screen.dart';
 class AuthRefreshNotifier extends ChangeNotifier {
   AuthRefreshNotifier(this._authService) {
     _subscription =
@@ -274,6 +276,24 @@ GoRouter createAppRouter({
           return CourseCreateScreen(
             institutionId: institutionId,
             programmeId: programmeId,
+          );
+        },
+      ),
+      GoRoute(
+        path: '/material-viewer',
+        builder: (context, state) {
+          final material = state.extra;
+
+          if (material is! CourseMaterial) {
+            return const Scaffold(
+              body: Center(
+                child: Text('Material not found.'),
+              ),
+            );
+          }
+
+          return MaterialViewerScreen(
+            material: material,
           );
         },
       ),
