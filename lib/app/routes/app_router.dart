@@ -1,5 +1,5 @@
 import 'dart:async';
-
+import 'package:flutter/material.dart';
 import 'package:coursemind/data/repositories/institution_account_repository.dart';
 import 'package:coursemind/data/repositories/institution_profile_repository.dart';
 import 'package:coursemind/data/repositories/user_profile_repository.dart';
@@ -14,9 +14,11 @@ import 'package:coursemind/features/institution/screens/institution_home_screen.
 import 'package:coursemind/features/institution/screens/institution_pending_screen.dart';
 import 'package:coursemind/features/institution/screens/institution_signup_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/foundation.dart';
 import 'package:go_router/go_router.dart';
-
+import 'package:coursemind/features/courses/screens/course_detail_screen.dart';
+import 'package:coursemind/features/courses/screens/courses_screen.dart';
+import 'package:coursemind/features/institution/screens/course_create_screen.dart';
+import 'package:coursemind/data/models/course.dart';
 class AuthRefreshNotifier extends ChangeNotifier {
   AuthRefreshNotifier(this._authService) {
     _subscription =
@@ -225,6 +227,55 @@ GoRouter createAppRouter({
         path: '/institution-home',
         builder: (context, state) =>
             const InstitutionHomeScreen(),
+      ),
+      GoRoute(
+        path: '/courses',
+        builder: (context, state) =>
+            const CoursesScreen(),
+      ),
+      GoRoute(
+        path: '/course-detail',
+        builder: (context, state) {
+          final course = state.extra;
+
+          if (course is! Course) {
+            return const Scaffold(
+              body: Center(
+                child: Text('Course not found.'),
+              ),
+            );
+          }
+
+          return CourseDetailScreen(
+            course: course,
+          );
+        },
+      ),
+      GoRoute(
+        path: '/institution/create-course',
+        builder: (context, state) {
+          final institutionId =
+              state.uri.queryParameters['institutionId'];
+
+          final programmeId =
+              state.uri.queryParameters['programmeId'];
+
+          if (institutionId == null ||
+              programmeId == null) {
+            return const Scaffold(
+              body: Center(
+                child: Text(
+                  'Institution or programme not specified.',
+                ),
+              ),
+            );
+          }
+
+          return CourseCreateScreen(
+            institutionId: institutionId,
+            programmeId: programmeId,
+          );
+        },
       ),
     ],
   );

@@ -3,6 +3,7 @@ import 'package:coursemind/features/auth/services/auth_service.dart';
 
 import '../../../data/models/user_profile.dart';
 import '../services/home_service.dart';
+import 'package:go_router/go_router.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -166,12 +167,13 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
           const SizedBox(height: 24),
-          _DashboardCard(
+       _DashboardCard(
             icon: Icons.menu_book_outlined,
             title: 'My Courses',
-            subtitle:
-                'Your registered courses will appear here.',
-            onTap: () {},
+            subtitle: 'View courses for your programme.',
+            onTap: () {
+              context.push('/courses');
+            },
           ),
           const SizedBox(height: 12),
           _DashboardCard(

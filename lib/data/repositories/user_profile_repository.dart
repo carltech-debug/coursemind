@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/user_profile.dart';
-
+import 'package:firebase_auth/firebase_auth.dart';
 class UserProfileRepository {
   final FirebaseFirestore _firestore;
 
@@ -21,4 +21,13 @@ class UserProfileRepository {
     }
     return UserProfile.fromMap(document.data()!);
   }
+  Future<UserProfile?> getCurrentUserProfile() async {
+  final user = FirebaseAuth.instance.currentUser;
+
+  if (user == null) {
+    return null;
+  }
+
+  return getProfile(user.uid);
+}
 }
