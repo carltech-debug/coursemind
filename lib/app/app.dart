@@ -1,51 +1,63 @@
-import 'package:coursemind/app/routes/app_router.dart';
-import 'package:coursemind/app/theme/app_theme.dart';
-import 'package:coursemind/features/auth/services/auth_service.dart';
+// ======================================================
+// COURSEMIND
+// Application Widget
+// ------------------------------------------------------
+// File:
+// app.dart
+//
+// Responsibility:
+// Configures the root MaterialApp for CourseMind.
+//
+// This file is responsible ONLY for:
+// • Theme
+// • Router
+// • Debug Banner
+//
+// It contains no business logic.
+// ======================================================
+
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 
-class CourseMindApp extends StatefulWidget {
-  const CourseMindApp({super.key});
+import 'routes/app_router.dart';
 
-  @override
-  State<CourseMindApp> createState() => _CourseMindAppState();
-}
+// ======================================================
+// COURSEMIND APPLICATION
+// ======================================================
 
-class _CourseMindAppState extends State<CourseMindApp> {
-  late final AuthService _authService;
-  late final AuthRefreshNotifier _authRefreshNotifier;
-  late final GoRouter _router;
-
-  @override
-  void initState() {
-    super.initState();
-
-    _authService = AuthService();
-
-    _authRefreshNotifier = AuthRefreshNotifier(
-      _authService,
-    );
-
-    _router = createAppRouter(
-      authService: _authService,
-      authRefreshNotifier: _authRefreshNotifier,
-    );
-  }
-
-  @override
-  void dispose() {
-    _router.dispose();
-    _authRefreshNotifier.dispose();
-    super.dispose();
-  }
+class CourseMindApp extends StatelessWidget {
+  const CourseMindApp({
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
+
+      // ==================================================
+      // APPLICATION TITLE
+      // ==================================================
+
       title: 'CourseMind',
+
+      // ==================================================
+      // DEBUG BANNER
+      // ==================================================
+
       debugShowCheckedModeBanner: false,
-      theme: AppTheme.lightTheme,
-      routerConfig: _router,
+
+      // ==================================================
+      // APPLICATION THEME
+      // ==================================================
+
+      theme: ThemeData(
+        useMaterial3: true,
+      ),
+
+      // ==================================================
+      // APPLICATION ROUTER
+      // ==================================================
+
+      routerConfig: AppRouter.router,
     );
   }
 }

@@ -1,302 +1,115 @@
-import 'dart:async';
+// ======================================================
+// COURSEMIND
+// Application Router
+// ------------------------------------------------------
+// File:
+// app_router.dart
+//
+// Responsibility:
+// Registers every application route.
+//
+// This file contains ONLY routing.
+// No business logic.
+// No Firebase.
+// ======================================================
+
 import 'package:flutter/material.dart';
-import 'package:coursemind/data/repositories/institution_account_repository.dart';
-import 'package:coursemind/data/repositories/institution_profile_repository.dart';
-import 'package:coursemind/data/repositories/user_profile_repository.dart';
-import 'package:coursemind/features/auth/screens/login_screen.dart';
-import 'package:coursemind/features/auth/screens/profile_setup_screen.dart';
-import 'package:coursemind/features/auth/screens/signup_screen.dart';
-import 'package:coursemind/features/auth/screens/welcome_screen.dart';
-import 'package:coursemind/features/auth/services/auth_service.dart';
-import 'package:coursemind/features/home/screens/home_screen.dart';
-import 'package:coursemind/features/home/screens/splash_screen.dart';
-import 'package:coursemind/features/institution/screens/institution_home_screen.dart';
-import 'package:coursemind/features/institution/screens/institution_pending_screen.dart';
-import 'package:coursemind/features/institution/screens/institution_signup_screen.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:go_router/go_router.dart';
-import 'package:coursemind/features/courses/screens/course_detail_screen.dart';
-import 'package:coursemind/features/courses/screens/courses_screen.dart';
-import 'package:coursemind/features/institution/screens/course_create_screen.dart';
-import 'package:coursemind/data/models/course.dart';
-import 'package:coursemind/data/models/course_material.dart';
-import 'package:coursemind/features/handouts/screens/material_viewer_screen.dart';
-class AuthRefreshNotifier extends ChangeNotifier {
-  AuthRefreshNotifier(this._authService) {
-    _subscription =
-        _authService.authStateChanges.listen((_) {
-      if (!isInitialized) {
-        isInitialized = true;
-      }
 
-      notifyListeners();
-    });
-  }
+import '../../core/constants/app_routes.dart';
 
-  final AuthService _authService;
-  late final StreamSubscription<User?> _subscription;
+import '../../features/splash/screens/splash_screen.dart';
 
-  bool isInitialized = false;
+import '../../features/placeholder/welcome_placeholder_screen.dart';
+import '../../features/placeholder/login_placeholder_screen.dart';
+import '../../features/placeholder/signup_placeholder_screen.dart';
+import '../../features/placeholder/student_home_placeholder_screen.dart';
 
-  @override
-  void dispose() {
-    _subscription.cancel();
-    super.dispose();
-  }
-}
+// ======================================================
+// APPLICATION ROUTER
+// ======================================================
 
-final _profileRepository =
-    UserProfileRepository();
+class AppRouter {
+  AppRouter._();
 
-final _institutionAccountRepository =
-    InstitutionAccountRepository();
+  static final GoRouter router = GoRouter(
 
-final _institutionProfileRepository =
-    InstitutionProfileRepository();
+    // ==================================================
+    // INITIAL ROUTE
+    // ==================================================
 
-GoRouter createAppRouter({
-  required AuthService authService,
-  required AuthRefreshNotifier authRefreshNotifier,
-}) {
-  return GoRouter(
-    initialLocation: '/splash',
-    refreshListenable: authRefreshNotifier,
-    redirect: (context, state) async {
-      final isInitialized =
-          authRefreshNotifier.isInitialized;
+    initialLocation: AppRoutes.splash,
 
-      final user = authService.currentUser;
-      final location = state.matchedLocation;
+    // ==================================================
+    // APPLICATION ROUTES
+    // ==================================================
 
-      if (!isInitialized) {
-        return location == '/splash'
-            ? null
-            : '/splash';
-      }
-
-      if (location == '/splash') {
-        if (user == null) {
-          return '/';
-        }
-
-        final studentProfile =
-            await _profileRepository
-                .getProfile(user.uid);
-
-        if (studentProfile != null) {
-          return '/home';
-        }
-
-        final institutionAccount =
-            await _institutionAccountRepository
-                .getAccount(user.uid);
-
-        if (institutionAccount != null) {
-          final institution =
-              await _institutionProfileRepository
-                  .getInstitution(
-            institutionAccount.institutionId,
-          );
-
-          if (institution?.status == 'approved') {
-            return '/institution-home';
-          }
-
-          return '/institution-pending';
-        }
-
-        return '/profile-setup';
-      }
-
-      if (user == null) {
-        final publicRoutes = {
-          '/',
-          '/login',
-          '/signup',
-          '/institution-signup',
-        };
-
-        if (publicRoutes.contains(location)) {
-          return null;
-        }
-
-        return '/';
-      }
-
-      final studentProfile =
-          await _profileRepository
-              .getProfile(user.uid);
-
-      if (studentProfile != null) {
-        if (location.startsWith('/institution')) {
-          return '/home';
-        }
-
-        if (location == '/profile-setup' ||
-            location == '/' ||
-            location == '/login' ||
-            location == '/signup' ||
-            location == '/institution-signup') {
-          return '/home';
-        }
-
-        return null;
-      }
-
-      final institutionAccount =
-          await _institutionAccountRepository
-              .getAccount(user.uid);
-
-      if (institutionAccount != null) {
-        final institution =
-            await _institutionProfileRepository
-                .getInstitution(
-          institutionAccount.institutionId,
-        );
-
-        final isApproved =
-            institution?.status == 'approved';
-
-        if (isApproved &&
-            location != '/institution-home') {
-          if (!location.startsWith('/institution')) {
-            return '/institution-home';
-          }
-        }
-
-        if (!isApproved &&
-            location != '/institution-pending') {
-          return '/institution-pending';
-        }
-
-        return null;
-      }
-
-      if (location == '/profile-setup') {
-        return null;
-      }
-
-      if (location == '/' ||
-          location == '/login' ||
-          location == '/signup') {
-        return null;
-      }
-
-      return '/profile-setup';
-    },
     routes: [
+
+      // ==================================================
+      // SPLASH SCREEN
+      // ==================================================
+
       GoRoute(
-        path: '/splash',
+        path: AppRoutes.splash,
         builder: (context, state) =>
             const SplashScreen(),
       ),
-      GoRoute(
-        path: '/',
-        builder: (context, state) =>
-            const WelcomeScreen(),
-      ),
-      GoRoute(
-        path: '/login',
-        builder: (context, state) =>
-            const LoginScreen(),
-      ),
-      GoRoute(
-        path: '/signup',
-        builder: (context, state) =>
-            const SignupScreen(),
-      ),
-      GoRoute(
-        path: '/profile-setup',
-        builder: (context, state) =>
-            const ProfileSetupScreen(),
-      ),
-      GoRoute(
-        path: '/home',
-        builder: (context, state) =>
-            const HomeScreen(),
-      ),
-      GoRoute(
-        path: '/institution-signup',
-        builder: (context, state) =>
-            const InstitutionSignupScreen(),
-      ),
-      GoRoute(
-        path: '/institution-pending',
-        builder: (context, state) =>
-            const InstitutionPendingScreen(),
-      ),
-      GoRoute(
-        path: '/institution-home',
-        builder: (context, state) =>
-            const InstitutionHomeScreen(),
-      ),
-      GoRoute(
-        path: '/courses',
-        builder: (context, state) =>
-            const CoursesScreen(),
-      ),
-      GoRoute(
-        path: '/course-detail',
-        builder: (context, state) {
-          final course = state.extra;
 
-          if (course is! Course) {
-            return const Scaffold(
-              body: Center(
-                child: Text('Course not found.'),
-              ),
-            );
-          }
+      // ==================================================
+      // WELCOME SCREEN
+      // ==================================================
 
-          return CourseDetailScreen(
-            course: course,
-          );
-        },
-      ),
       GoRoute(
-        path: '/institution/create-course',
-        builder: (context, state) {
-          final institutionId =
-              state.uri.queryParameters['institutionId'];
-
-          final programmeId =
-              state.uri.queryParameters['programmeId'];
-
-          if (institutionId == null ||
-              programmeId == null) {
-            return const Scaffold(
-              body: Center(
-                child: Text(
-                  'Institution or programme not specified.',
-                ),
-              ),
-            );
-          }
-
-          return CourseCreateScreen(
-            institutionId: institutionId,
-            programmeId: programmeId,
-          );
-        },
+        path: AppRoutes.welcome,
+        builder: (context, state) =>
+            const WelcomePlaceholderScreen(),
       ),
+
+      // ==================================================
+      // LOGIN SCREEN
+      // ==================================================
+
       GoRoute(
-        path: '/material-viewer',
-        builder: (context, state) {
-          final material = state.extra;
+        path: AppRoutes.login,
+        builder: (context, state) =>
+            const LoginPlaceholderScreen(),
+      ),
 
-          if (material is! CourseMaterial) {
-            return const Scaffold(
-              body: Center(
-                child: Text('Material not found.'),
-              ),
-            );
-          }
+      // ==================================================
+      // SIGNUP SCREEN
+      // ==================================================
 
-          return MaterialViewerScreen(
-            material: material,
-          );
-        },
+      GoRoute(
+        path: AppRoutes.signup,
+        builder: (context, state) =>
+            const SignupPlaceholderScreen(),
+      ),
+
+      // ==================================================
+      // STUDENT HOME
+      // ==================================================
+
+      GoRoute(
+        path: AppRoutes.studentHome,
+        builder: (context, state) =>
+            const StudentHomePlaceholderScreen(),
       ),
     ],
+
+    // ==================================================
+    // UNKNOWN ROUTE
+    // ==================================================
+
+    errorBuilder: (context, state) {
+      return Scaffold(
+        body: Center(
+          child: Text(
+            'Route Not Found\n\n${state.uri}',
+            textAlign: TextAlign.center,
+          ),
+        ),
+      );
+    },
   );
 }
